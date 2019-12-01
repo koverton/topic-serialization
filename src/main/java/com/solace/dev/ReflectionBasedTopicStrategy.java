@@ -13,7 +13,7 @@ public class ReflectionBasedTopicStrategy implements TopicStrategy<Object> {
 
     public ReflectionBasedTopicStrategy(Class clazz, String topicStrategy) {
         this.getterMap = ReflectionHelper.getters(clazz);
-        this.topicLevels = Level.parseTopicStrategy(topicStrategy);
+        this.topicLevels = TopicDefinitionParser.parse(topicStrategy);
     }
 
     @Override
