@@ -76,6 +76,33 @@ Topic subscription = strategy.makeSubscription( where );
 eventBus.subscribe( subscription );
 ```
 
+## Example Topic Hierarchies
+
+The following examples come from real-world applications of this architectural 
+pattern.
+
+ `OMS/{instance}/orders/{venue}/{symbol}/{orderID}/{orderState}`
+ 
+ This topic hierarchy comes from equities trading systems. The specific venue, 
+ symbol, order-ID and order-state of each order message would be substituted 
+ into the topic prototype. This allows other systems to filter on those 
+ details to support many different application such as sticky routing, 
+ load-balancing, actor-models, etc.
+ 
+ `Stores/{state}/{storeNumber}/Order/{orderId}/{action}`
+ 
+ This example comes from retail stores where store events fan into a core 
+ microservices architecture for all back-end capabilities. the rich topic 
+ filtering is used to decouple the services and support flexible, agile 
+ microservices that can accommodate rapidly changing requirements.
+ 
+ `Location/{latitude}/{longitude}/{vid}`
+ 
+ A security-camera monitoring service uses this topic hierarchy for security 
+ events propagated from from remote sensors into real-time analytics for 
+ security alerting. The dynamic coordinates in the topic support lightweight 
+ geo-spatial routing and filtering without adding heavy content filtering.
+
 ## Conclusion
 
 Too many developers do not take advantage of sophisticated hierarchical
