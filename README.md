@@ -21,6 +21,18 @@ Ideally, real implementations would be targeted to the specific
 event-types of your application via custom `TopicStrategy<YourEvent>`
 implementations.
 
+The goal is for code that would commonly look something like this:
+
+```java
+    Serializer<Order> serializer = new OrderSerializer();
+    TopicStrategy<Order> strategy = new OrderTopicStrategy();
+
+    Order order = new Order(333, "shoes", 1.2345, 6789);
+    Topic topic = strategy.makeTopic(order);
+    Message message serializer.serialize(order);
+    eventbus.send(message, topic);
+```
+
 ## `TopicStrategy<Event>`
 
 The interface for any topic serialization is:

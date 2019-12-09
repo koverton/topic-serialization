@@ -2,12 +2,12 @@ package com.solace.dev;
 
 import static junit.framework.TestCase.assertEquals;
 
-import com.solacesystems.jcsmp.JCSMPFactory;
-import com.solacesystems.jcsmp.Topic;
+import com.solacesystems.jcsmp.*;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 public class TopicFactoryTest
 {
@@ -61,5 +61,73 @@ public class TopicFactoryTest
 
         filter.put("quantity", "9999");
         assertEquals("order/5555/shoes/9999", strategy.makeSubscription(filter).getName());
+    }
+
+    @Test
+    public void performanceTest() throws Exception {
+        TopicStrategy<Foo> strategy = new FooTopicStrategy();
+        Map<String,String> filter = new HashMap<>();
+        assertEquals("order/>", strategy.makeSubscription(filter).getName());
+
+        final JCSMPProperties properties = new JCSMPProperties();
+        properties.setProperty(JCSMPProperties.HOST, "localhost");  // msg-backbone-ip:port
+        properties.setProperty(JCSMPProperties.VPN_NAME, "default"); // message-vpn
+        // client-username (assumes no password)
+        properties.setProperty(JCSMPProperties.USERNAME, "default");
+        final JCSMPSession session = JCSMPFactory.onlyInstance().createSession(properties,
+                JCSMPFactory.onlyInstance().createContext(null),
+                new SessionEventHandler() {
+                    @Override
+                    public void handleEvent(SessionEventArgs sessionEventArgs) {
+                    }
+                }
+        );
+
+        final CountDownLatch latch = new CountDownLatch(1); // used for
+        // synchronizing b/w threads
+        /** Anonymous inner-class for MessageListener
+         *  This demonstrates the async threaded message callback */
+        final XMLMessageConsumer cons = session.getMessageConsumer(new XMLMessageListener() {
+            public void onReceive(BytesXMLMessage msg) {
+                latch.countDown();  // unblock main thread
+            }
+            public void onException(JCSMPException e) {
+                System.out.printf("Consumer received exception: %s%n",e);
+                latch.countDown();  // unblock main thread
+            }
+        });
+
+        // Warmup
+        for (Integer i = 0; i < 100; i++) {
+            filter.put("quantity", i.toString());
+            Topic topic = strategy.makeSubscription(filter);
+            //Topic topic = JCSMPFactory.onlyInstance().createTopic(i.toString());
+            session.addSubscription(topic);
+            session.removeSubscription(topic);
+        }
+
+        long start = System.currentTimeMillis();
+        for (Integer i = 0; i < 100000; i++) {
+            filter.put("quantity", i.toString());
+            Topic topic = strategy.makeSubscription(filter);
+            //Topic topic = JCSMPFactory.onlyInstance().createTopic(i.toString());
+            session.addSubscription(topic, (i.intValue() == 9999) ? true : false);
+        }
+        long end = System.currentTimeMillis();
+
+        System.out.println("Subscribed 100k in " + (end-start) + " ms.");
+        cons.start();
+        // Consume-only session is now hooked up and running!
+
+        try {
+            latch.await(); // block here until message received, and latch will flip
+        } catch (InterruptedException e) {
+            System.out.println("I was awoken while waiting");
+        }
+        // Close consumer
+        cons.close();
+        System.out.println("Exiting.");
+        session.closeSession();
+
     }
 }
