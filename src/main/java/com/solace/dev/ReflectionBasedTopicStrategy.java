@@ -24,7 +24,7 @@ public class ReflectionBasedTopicStrategy implements TopicStrategy<Object> {
         StringBuilder sb = new StringBuilder();
         for(Level l : topicLevels) {
             if (l.type.equals(Level.LvlType.FIELD)) {
-                // lookup a field value
+                // lookup and append a field value
                 Method method = getterMap.get(l.value);
                 sb.append( applyGetter(method, instance) );
             }
