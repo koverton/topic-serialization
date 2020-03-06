@@ -23,6 +23,23 @@ class ReflectionHelper {
         return result;
     }
 
+    static String applyGetter(Method getter, Object instance) {
+        // lookup a field value
+        Object value = null;
+        if (getter != null) {
+            try {
+                value = getter.invoke(instance);
+            }
+            catch (Exception e) {
+                System.out.printf("WARNING -- instance type '%s' does not have getter '%s'\n",
+                        instance.getClass().getName(), getter.getName());
+            }
+        }
+        if (value != null)
+            return value.toString();
+        return "_";
+    }
+
     static private boolean isGetter(Method method){
         if(!method.getName().startsWith("get"))       return false;
         if(method.getParameterTypes().length != 0)    return false;

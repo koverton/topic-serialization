@@ -1,6 +1,7 @@
 package com.solace.dev;
 
 import static junit.framework.TestCase.assertEquals;
+import static junit.framework.TestCase.format;
 
 import com.solacesystems.jcsmp.*;
 import org.junit.Test;
@@ -9,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
-public class TopicFactoryTest
+public class TopicStrategyTest
 {
     static class FooTopicStrategy implements TopicStrategy<Foo> {
         public Topic makeTopic(Foo foo) {
@@ -118,7 +119,20 @@ public class TopicFactoryTest
         System.out.println("Subscribed 100k in " + (end-start) + " ms.");
         cons.start();
         // Consume-only session is now hooked up and running!
+        Foo order = new Foo(1, "foo", 9.98765, 2 );
 
+        XMLMessageProducer producer = session.getMessageProducer(
+                new JCSMPStreamingPublishCorrelatingEventHandler() {
+                    public void responseReceivedEx(Object o) { }
+                    public void handleErrorEx(Object o, JCSMPException e, long l) { }
+                    public void handleError(String s, JCSMPException e, long l) { }
+                    public void responseReceived(String s) { }
+                }
+        );
+        TextMessage msg = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
+        msg.setText(order.toString());
+        Topic topic = strategy.makeTopic(order);
+        producer.send( msg, topic );
         try {
             latch.await(); // block here until message received, and latch will flip
         } catch (InterruptedException e) {

@@ -6,7 +6,7 @@ import java.util.List;
 
 import static junit.framework.TestCase.assertEquals;
 
-public class TopicLevelParserTest {
+public class TopicDefinitionParserTest {
     @Test
     public void basicStaticTest() {
         String expression = "static/stuff";

@@ -19,4 +19,15 @@ public class ReflectionHelperTest {
         assertTrue( getters.containsKey("price") );
         assertTrue( getters.containsKey("id") );
     }
+
+    @Test
+    public void applyGetterTest() {
+        Foo foo = new Foo(54321, "shoes", 54.321, 1234 );
+        Map<String, Method> getters = ReflectionHelper.getters(foo.getClass());
+
+        assertEquals( "54321", ReflectionHelper.applyGetter(getters.get("id"), foo));
+        assertEquals( "shoes", ReflectionHelper.applyGetter(getters.get("itemname"), foo));
+        assertEquals( "54.321", ReflectionHelper.applyGetter(getters.get("price"), foo));
+        assertEquals( "1234", ReflectionHelper.applyGetter(getters.get("quantity"), foo));
+    }
 }
