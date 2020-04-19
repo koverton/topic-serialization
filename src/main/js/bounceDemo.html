@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML Frames</title>
+</head>
+
+<!--
+	-- This page can be used to demo bridging/routing.       --
+	-- In each frame, connect the visualization to different --
+	-- Solace PubSub+ brokers on a default topic. Each       --
+	-- view will perform an animation for each arriving msg. --
+-->
+
+<frameset cols = "38%,38%,24%">
+	<frame name = main   src = "bounce/index.html" />
+	<frame name = main   src = "bounce/index.html" />
+	<frame name = main   src = "paho/index.html" />
+	<noframes>
+		<body>Your browser does not support frames.</body>
+	</noframes>
+</frameset>
+
+</html>
+

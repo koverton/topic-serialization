@@ -26,4 +26,15 @@ public interface TopicStrategy<Event> {
      * @return Subscription filter instance matching the topic architecture based upon contents of the keyBasedFilters parameter.
      */
     Topic makeSubscription(Map<String,String> keyBasedFilters);
+
+    /**
+     * Get a string representing the topic strategy definition in the following format:
+     *      Telelemetry/{Locality}/{SourceID}/{ObjectID}
+     *
+     * Where hierarchical levels are separated by '/' delimiters and each level in the definition
+     * can be either static strings ('Telemetry') or values from the source event ('{Locality}').
+     *
+     * @return String containing the formatted topic definition.
+     */
+    String getTopicDefinition();
 }

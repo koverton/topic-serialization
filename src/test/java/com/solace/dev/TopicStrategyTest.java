@@ -13,6 +13,7 @@ import java.util.concurrent.CountDownLatch;
 public class TopicStrategyTest
 {
     static class FooTopicStrategy implements TopicStrategy<Foo> {
+        public String getTopicDefinition() { return "order/{id}/{itemName}/{quantity}"; }
         public Topic makeTopic(Foo foo) {
             return JCSMPFactory.onlyInstance().createTopic(
                     String.format("order/%d/%s/%d",

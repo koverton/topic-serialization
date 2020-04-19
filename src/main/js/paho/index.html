@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Paho Pub-Sub</title>
+  <link rel="stylesheet" href="style.css">
+  <script type="text/javascript" src="paho-mqttws311.js"></script>
+  <script type="text/javascript" src="../TopicStrategy.js"></script>
+  <script type="text/javascript" src="pahoconn.js"></script>
+  <script type="text/javascript" src="solbounce.js"></script>
+  <script type="text/javascript">
+    function togglePassword() {
+      document.getElementById('inputPassword').disabled = !document.getElementById('enablePassword').checked
+    }
+  </script>
+</head>
+
+<body onload="SolBounce.init('green')" onresize="SolBounce.calcstart()">
+  
+<div class=connectionInfo>
+  <p>Host: <input id=inputHost value=54.146.38.12 size=15> Port: <input id=inputPort value=8001 size=8></p>
+  <p>User: <input id=inputUser value=mqttuser size=15>  
+  Password: <input id=enablePassword type=checkbox onchange="togglePassword()"> 
+  <input type=password id=inputPassword size=15 disabled=true>
+  </p>
+  <p>Topic:<input id=inputTopic value='poskeeper/US/+/+/+/position' size=21>
+    <button onclick="PahoConn.onConnect({
+      hostString: document.getElementById('inputHost').value,
+      port:       document.getElementById('inputPort').value,
+      username:   document.getElementById('inputUser').value,
+      hasPassword:document.getElementById('enablePassword').checked,
+      password:   document.getElementById('inputPassword').value,
+      topic:      document.getElementById('inputTopic').value,
+      color:      'green',
+      callback:   SolBounce.dropDot
+    })">GO!</button>
+    <button onclick="PahoConn.onDisconnect()">So long</button></p>
+  <p>Send messages: <input type="checkbox" onchange="PahoConn.toggleSender(this)"></p>
+
+
+  <!-- <img id=logo onclick="SolBounce.dropDot()" src="solace_logo_green.png"> -->
+  <img id=logo onclick="PahoConn.sendMsg()" src="solace_logo_green.png" alt="click to send">
+  
+  <p id=connDetails></p>
+  <p id=subDetails></p>
+  <p id=msgDetails></p>
+</div>
+
+<div id=container>
+  <canvas id="animate"></canvas>
+</div>
+
+</body>
+</html>

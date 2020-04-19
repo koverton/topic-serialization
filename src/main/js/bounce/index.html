@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Solace Pub-Sub</title>
+	<link rel="stylesheet" href="style.css">
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/solclientjs"></script>
+	<script type="text/javascript" src="../TopicStrategy.js"></script>
+	<script type="text/javascript" src="solconn.js"></script>
+	<script type="text/javascript" src="solbounce.js"></script>
+</head>
+
+<body onload="SolBounce.init('green')" onresize="SolBounce.calcstart()">
+	
+<div class=connectionInfo>
+	<p>URL: <input id=inputHost value=ws://localhost size=22> VPN: <input id=inputVpn value=kenglobal size=10></p>
+	<p>User: <input id=inputUser value=default size=15> Pass: <input type=password id=inputPassword size=15>
+	<button onclick="SolConn.onConnect({
+	 		hostString: document.getElementById('inputHost').value,
+			msgVpnName: document.getElementById('inputVpn').value,
+			clientUsername: document.getElementById('inputUser').value,
+			clientPassword: document.getElementById('inputPassword').value,
+	 		callback: SolBounce.dropDot
+	 	})">GO!</button>
+		<button onclick="SolConn.onDisconnect()">So long</button></p>
+
+<p><br></p>
+
+<p>Subscribing:
+R:<input id=sub.region value='' size=3>
+B:<input id=sub.book value='' size=8>
+A:<input id=sub.account value='' size=8>
+I:<input id=sub.instrument value=AAPL size=6>
+<button onclick="SolConn.onSubscribe()">subscribe</button></p>
+</p>
+
+<p>Sending:&nbsp;&nbsp;&nbsp;&nbsp;
+R:<input id=msg.region value=US size=3>
+B:<input id=msg.book value=GTMRUS size=8>
+A:<input id=msg.account value=314159 size=8>
+I:<input id=msg.instrument value=AAPL size=6>
+<button onclick="SolConn.sendMsg({
+	 		region: document.getElementById('msg.region').value,
+			book: document.getElementById('msg.book').value,
+			account: document.getElementById('msg.account').value,
+			instrument: document.getElementById('msg.instrument').value
+	 	})">send</button>
+<input type="checkbox" onchange="SolConn.toggleSender(this)"> keep sending</p>
+
+
+	<img id=logo onclick="SolBounce.dropDot()" src="solace_logo_green.png">
+	
+	<p id=connDetails>(Not connected.)</p>
+	<p id=subDetails></p>
+</div>
+
+<div id=container>
+	<canvas id="animate"></canvas>
+</div>
+
+</body>
+</html>
